@@ -1,0 +1,5 @@
+host=jdbc:mariadb://localhost:4001/
+db_driver=org.mariadb.jdbc.Driver
+user=kaufman
+password=XXXXXXXXX
+database=eHistology

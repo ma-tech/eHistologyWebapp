@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<project name="eHistologywebapp" default="all" basedir=".">
+
+ <!-- ==================== Initialization properties ===================== -->
+  <property environment="env" />
+  <property name="debug" value="on"/>
+  <property name="optimize" value="true" />
+
+  <property name="build" value="../webapps/eHistologywebapp"/>
+  <property name="dist" value="../webapps"/>
+  <property name="config" value="eHistology" />
+
+  <path id="webapps-classpath">
+        <fileset dir="lib" includes="*.jar"/>
+        <fileset dir="${env.CATALINA_HOME}/lib" includes="*.jar"/>
+  </path>
+
+  <!-- ======================== Copy static files ========================= -->
+  <target name="prepare"  depends="clean">
+
+      <!-- Create destination directories -->
+      <mkdir dir="${build}"/>
+      <mkdir dir="${build}/WEB-INF"/>
+      <mkdir dir="${build}/WEB-INF/classes"/>
+      <mkdir dir="${build}/WEB-INF/lib"/>
+      <!-- <mkdir dir="${build}/WEB-INF/css"/> -->
+
+      <copy todir="${build}/WEB-INF/classes">
+          <fileset file="etc/${config}/eHistology.properties"/>
+      </copy>
+
+      <copy todir="${build}/WEB-INF">
+          <fileset file="etc/${config}/web.xml"/>
+      </copy>
+
+      <!--
+      <copy todir="${build}">
+          <fileset dir="css"/>   
+      </copy>
+      -->
+      
+      <copy todir="${build}/WEB-INF/lib">
+          <fileset dir="lib">   
+	   <exclude name="javaee.jar" /> 
+	   <exclude name="el-api.jar" />
+	   <exclude name="javax.servlet.jsp.jar" /> 
+	  </fileset>                          
+      </copy>
+
+  </target>
+
+
+
+  <!-- ==================== Build all web applications ==================== -->
+  <target name="webapps" depends="prepare">
+
+	<javac srcdir="src"
+           includeantruntime="false"
+	   optimize="${optimize}" debug="${debug}"
+           destdir="${build}/WEB-INF/classes">
+           <classpath refid="webapps-classpath"/>
+     </javac> 
+  </target>
+
+  <!-- ==================== Copy files to distribution format ============= -->
+  <target name="dist" depends="main">
+
+    <!-- Create webapp WAR files -->
+    <jar   jarfile="${dist}/${config}webapp.war"
+           basedir="${build}"
+           includes="**" />
+  </target>
+
+
+  <!-- ==================== Administrative targets  ======================= -->
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+  <target name="all" depends="dist">
+      <mkdir dir="${build}/jsp"/>
+  </target>
+
+  <target name="main" depends="webapps"/>
+
+
+  
+  <!-- =============================== Help =============================== -->
+  <target name="targets">
+    <echo message=""/>
+    <echo message="ANT build targets for Tomcat"/>
+    <echo message=""/>
+    <echo message="The following targets are available:"/>
+    <echo message="  all                  Clean, then create distribution"/>
+    <echo message="  clean                Clean build and dist directories"/>
+    <echo message="  dist                 Create distribution"/>
+    <echo message="  main                 (Default) Build tomcat and webapps"/>
+    <echo message="  webapps              Build included web applications"/>
+  </target>
+
+	
+</project>
+
